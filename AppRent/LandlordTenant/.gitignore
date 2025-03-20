@@ -1,0 +1,13 @@
+# Arquivos do macOS
+.DS_Store
+
+# Arquivos do Xcode que não devem ser versionados
+*.xcuserdatad/
+*.xcworkspace/
+*.xcuserdata/
+
+# Credenciais do Firebase (NÃO versionar)
+GoogleService-Info.plist
+
+# Swift Package Manager
+Package.resolved
