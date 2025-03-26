@@ -9,5 +9,8 @@
 # Credenciais do Firebase (NÃO versionar)
 GoogleService-Info.plist
 
+**/GoogleService-Info.plist
+
+
 # Swift Package Manager
 Package.resolved
