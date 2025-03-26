@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+
+# Expo/React Native
+node_modules/
+.expo/
+.expo-shared/
+npm-debug.log
+yarn-error.log
+
+# IDEs
+.vscode/
+.idea/
+
+# OS generated
+Thumbs.db
+Desktop.ini
+
+# React Native packager cache
+metro-cache/
+tmp/
+
+# Build output
+android/
+ios/
+build/
+
+# Environment files
+.env
+.env.*
