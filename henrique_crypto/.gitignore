@@ -1,0 +1,49 @@
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+expo-env.d.ts
+
+# Firebase - avoid uploading config file if needed
+firebase-debug.log
+firebase.json
+*.firebaserc
+
+# Native - iOS / Android build and signing artifacts
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.xcuserdata/
+*.xcworkspace/
+*.xcuserstate
+
+# Metro bundler cache
+.metro-cache/
+metro.config.js
+
+# Logs and debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.log
+
+# macOS
+.DS_Store
+*.pem
+
+# Environment configs
+.env*
+.env*.local
+
+# TypeScript
+*.tsbuildinfo
+
+# VSCode
+.vscode/
