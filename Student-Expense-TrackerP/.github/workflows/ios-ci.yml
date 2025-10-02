@@ -1,0 +1,80 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  build-and-test:
+    runs-on: macos-14  # Use macOS 14 which has Xcode 16+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Xcode
+        run: |
+          # List available Xcode versions
+          echo "Available Xcode versions:"
+          ls /Applications/ | grep Xcode || echo "No Xcode installations found in /Applications/"
+          
+          # Try to select the newest available Xcode (16+)
+          if [ -d "/Applications/Xcode_16.1.app" ]; then
+            echo "Using Xcode 16.1"
+            sudo xcode-select -s /Applications/Xcode_16.1.app/Contents/Developer
+          elif [ -d "/Applications/Xcode_16.0.app" ]; then
+            echo "Using Xcode 16.0"
+            sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
+          elif [ -d "/Applications/Xcode.app" ]; then
+            echo "Using default Xcode (checking version...)"
+            sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+          fi
+          
+          # Show selected version
+          echo "Selected Xcode version:"
+          xcodebuild -version
+          
+      - name: Check project compatibility
+        run: |
+          # Try to read the project file format
+          echo "Testing project compatibility..."
+          if xcodebuild -list > /dev/null 2>&1; then
+            echo "✅ Project format compatible with available Xcode"
+            xcodebuild -list
+          else
+            echo "❌ Project still incompatible - may need different runner"
+            echo "Trying alternative approach..."
+            # Sometimes the project file needs a moment to be recognized
+            sleep 2
+            xcodebuild -list || exit 1
+          fi
+        
+      - name: Install SwiftLint (optional)
+        run: |
+          if command -v brew &> /dev/null; then
+            brew install swiftlint || echo "SwiftLint installation failed, continuing without it"
+          else
+            echo "Homebrew not available, skipping SwiftLint"
+          fi
+          
+      - name: Resolve package dependencies
+        run: |
+          echo "Resolving package dependencies..."
+          xcodebuild -resolvePackageDependencies -project StudentExpenseTracker.xcodeproj
+        
+      - name: Run SwiftLint (if available)
+        run: |
+          if command -v swiftlint &> /dev/null; then
+            swiftlint || echo "SwiftLint issues found but continuing build"
+          else
+            echo "SwiftLint not available, skipping linting"
+          fi
+          
+      - name: Build and test
+        run: |
+          echo "Building and testing..."
+          xcodebuild clean build test \
+            -project StudentExpenseTracker.xcodeproj \
+            -scheme Buckit \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.1' \
+            CODE_SIGNING_ALLOWED=NO 

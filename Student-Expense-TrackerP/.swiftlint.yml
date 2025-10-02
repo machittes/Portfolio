@@ -1,0 +1,42 @@
+disabled_rules:
+  - trailing_whitespace
+  - line_length
+  - function_body_length
+  - type_body_length
+  - file_length
+
+opt_in_rules:
+  - empty_count
+
+included:
+  - StudentExpenseTracker
+
+excluded:
+  - Carthage
+  - Pods
+  - fastlane
+  - .build
+  - DerivedData
+
+line_length:
+  warning: 150
+  error: 200
+  ignores_function_declarations: true
+  ignores_comments: true
+  ignores_urls: true
+
+function_body_length:
+  warning: 60
+  error: 100
+
+type_body_length:
+  warning: 300
+  error: 500
+
+file_length:
+  warning: 500
+  error: 1000
+
+# Only show warnings, don't fail the build
+warning_threshold: 50
+error_threshold: 100 

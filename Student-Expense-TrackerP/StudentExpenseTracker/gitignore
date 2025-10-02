@@ -1,0 +1,45 @@
+# macOS
+.DS_Store
+
+# Xcode
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+
+# SwiftPM
+.build/
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Firebase / Secrets
+GoogleService-Info.plist
+GoogleService-Info*.plist
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/README.md
+
+# Archives / Symbols
+*.xcarchive
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Workspace (optional: keep only .xcodeproj)
+*.xcworkspace
+
+# Misc
+*.log
+*.tmp
+.env
+.env.*

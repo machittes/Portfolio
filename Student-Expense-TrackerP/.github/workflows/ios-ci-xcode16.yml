@@ -1,0 +1,84 @@
+name: iOS CI (Xcode 16)
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  build-and-test-xcode16:
+    runs-on: macos-15  # Latest macOS runner with Xcode 16
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Force use Xcode 16
+        run: |
+          echo "Available Xcode versions:"
+          find /Applications -name "Xcode*.app" -maxdepth 1 2>/dev/null || echo "No Xcode apps found"
+          
+          # Force select newest Xcode
+          XCODE_PATH=""
+          if [ -d "/Applications/Xcode_16.1.app" ]; then
+            XCODE_PATH="/Applications/Xcode_16.1.app/Contents/Developer"
+          elif [ -d "/Applications/Xcode_16.0.app" ]; then
+            XCODE_PATH="/Applications/Xcode_16.0.app/Contents/Developer"
+          elif [ -d "/Applications/Xcode.app" ]; then
+            XCODE_PATH="/Applications/Xcode.app/Contents/Developer"
+          fi
+          
+          if [ -n "$XCODE_PATH" ]; then
+            echo "Setting Xcode path to: $XCODE_PATH"
+            sudo xcode-select -s "$XCODE_PATH"
+            echo "Xcode version:"
+            xcodebuild -version
+          else
+            echo "No suitable Xcode found"
+            exit 1
+          fi
+          
+      - name: Test project access
+        run: |
+          echo "Testing project file access..."
+          if [ -f "StudentExpenseTracker.xcodeproj/project.pbxproj" ]; then
+            echo "✅ Project file exists"
+            # Try to list schemes
+            xcodebuild -list -project StudentExpenseTracker.xcodeproj || {
+              echo "❌ Cannot read project with current Xcode"
+              echo "Project format may require Xcode 16+"
+              exit 1
+            }
+          else
+            echo "❌ Project file not found"
+            exit 1
+          fi
+          
+      - name: Install dependencies
+        run: |
+          # Install SwiftLint
+          brew install swiftlint
+          
+      - name: Resolve packages
+        run: |
+          xcodebuild -resolvePackageDependencies -project StudentExpenseTracker.xcodeproj
+          
+      - name: Lint code
+        run: |
+          swiftlint --reporter github-actions-logging || echo "Linting completed with warnings"
+          
+      - name: Build and test
+        run: |
+          xcodebuild clean build test \
+            -project StudentExpenseTracker.xcodeproj \
+            -scheme Buckit \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.1' \
+            -derivedDataPath ./DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee build_log.txt
+            
+      - name: Upload build log (if failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build_log.txt 
